@@ -7,6 +7,8 @@ import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
 import java.util.function.Function;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -19,7 +21,7 @@ import javax.swing.JTextArea;
  * Modify this small program adding new filters.
  * Realize this exercise using as much as possible the Stream library.
  * 
- * 1) Convert to lowercase
+ * 1) Convert to lower case
  * 
  * 2) Count the number of chars
  * 
@@ -35,7 +37,19 @@ public final class LambdaFilter extends JFrame {
     private static final long serialVersionUID = 1760990730218643730L;
 
     private enum Command {
-        IDENTITY("No modifications", Function.identity());
+        IDENTITY("No modifications", Function.identity()),
+    	LOWERCASE("To Lowercase", String::toLowerCase),
+    	N_CHARS("Number of chars", s -> Integer.toString(s.length())),
+    	N_LINES("Number of lines", s -> Integer.toString((int) s.chars().filter(e -> e == '\n').count() + 1)),
+    	ALPHA_ORDER("Words in alphabetical order", s -> Arrays.stream(s.split("\s|\n"))
+    														.sorted()
+    														.collect(Collectors.joining("\n"))),
+    	COUNT_EACH_WORD("Write the count for each word", s -> Arrays.stream(s.split("\s|\n"))
+    																.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+    																.entrySet().stream()
+    																.map(e -> e.getKey() + " -> " + e.getValue())
+    																.collect(Collectors.joining("\n"))
+    	);
 
         private final String commandName;
         private final Function<String, String> fun;
